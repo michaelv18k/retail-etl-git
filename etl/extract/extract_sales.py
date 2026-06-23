@@ -22,13 +22,7 @@ def extract_pos_transactions(start_date: str, end_date: str) -> pd.DataFrame:
         account=os.environ.get("SNOWFLAKE_ACCOUNT")
     )
     query = """
-        SELECT
-            transaction_id,
-            store_id,
-            product_id,
-            quantity,
-            unit_price,
-            transaction_date
+        SELECT *
         FROM RETAIL_DB.RAW.POS_TRANSACTIONS
         WHERE transaction_date BETWEEN %(start)s AND %(end)s
     """
