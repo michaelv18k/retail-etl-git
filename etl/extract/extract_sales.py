@@ -9,17 +9,28 @@ SNOWFLAKE_ACCOUNT = "xy12345.us-east-1"
 
 def extract_pos_transactions(start_date, end_date):   # missing type hints
     # CORRECTNESS: no docstring
-    conn = snowflake.connector.connect(
-        user=SNOWFLAKE_USER,
-        password=SNOWFLAKE_PASSWORD,
-        account=SNOWFLAKE_ACCOUNT
-    )
+conn = snowflake.connector.connect(
+    user=os.environ.get("SNOWFLAKE_USER"),
+    password=os.environ.get("SNOWFLAKE_PASSWORD"),
+    account=os.environ.get("SNOWFLAKE_ACCOUNT")
+)
     # PERFORMANCE: SELECT * with no WHERE clause = full table scan
-    query = "select * from RETAIL_DB.RAW.POS_TRANSACTIONS"
+    query = """
+    SELECT
+        transaction_id,
+        store_id,
+        product_id,
+        quantity,
+        unit_price,
+        transaction_date
+    FROM RETAIL_DB.RAW.POS_TRANSACTIONS
+"""
     
     try:
         df = pd.read_sql(query, conn)
         print(f"got data")   # CORRECTNESS: print instead of logging
         return df
-    except:                  # SECURITY: bare except hides all errors
+    except snowflake.connector.Error as e:
+    logger.error(f"Snowflake extraction failed: {e}")
+    raise
         pass                 # CORRECTNESS: silently swallows failures
