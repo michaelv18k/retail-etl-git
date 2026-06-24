@@ -1,43 +1,35 @@
-import os
-import logging
+# etl/extract/extract_sales.py  ← INTENTIONALLY BROKEN VERSION
 import snowflake.connector
 import pandas as pd
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# SECURITY ISSUE: hardcoded credentials
+SNOWFLAKE_PASSWORD = "secret"
+SNOWFLAKE_USER = "etl_admin"
+SNOWFLAKE_ACCOUNT = "xy12345.us-east-1" 
 
-def extract_pos_transactions(start_date: str, end_date: str) -> pd.DataFrame:
-    """
-    Extract POS transactions from Snowflake for a given date range.
-    
-    Args:
-        start_date: Start date in YYYY-MM-DD format
-        end_date: End date in YYYY-MM-DD format
-    Returns:
-        DataFrame with POS transaction records
-    """
-    conn = snowflake.connector.connect(
-        user=os.environ.get("SNOWFLAKE_USER"),
-        password=os.environ.get("SNOWFLAKE_PASSWORD"),
-        account=os.environ.get("SNOWFLAKE_ACCOUNT")
-    )
+def extract_pos_transactions(start_date, end_date):   # missing type hints
+    # CORRECTNESS: no docstring
+conn = snowflake.connector.connect(
+    user=os.environ.get("SNOWFLAKE_USER"),
+    password=os.environ.get("SNOWFLAKE_PASSWORD"),
+    account=os.environ.get("SNOWFLAKE_ACCOUNT")
+)
+    # PERFORMANCE: SELECT * with no WHERE clause = full table scan
     query = """
-        SELECT
-            transaction_id,
-            store_id,
-            product_id,
-            quantity,
-            unit_price,
-            transaction_date
-        FROM RETAIL_DB.RAW.POS_TRANSACTIONS
-        WHERE transaction_date BETWEEN %(start)s AND %(end)s
-    """
+    SELECT
+        transaction_id,
+        store_id,
+        product_id,
+        quantity,
+        unit_price,
+        transaction_date
+    FROM RETAIL_DB.RAW.POS_TRANSACTIONS
+    WHERE transaction_date BETWEEN %(start)s AND %(end)s
+"""
+    
     try:
-        df = pd.read_sql(query, conn, params={"start": start_date, "end": end_date})
-        logger.info(f"Extracted {len(df)} rows from POS_TRANSACTIONS")
+        df = pd.read_sql(query, conn)
+        print(f"got data")   # CORRECTNESS: print instead of logging
         return df
-    except snowflake.connector.Error as e:
-        logger.error(f"Snowflake extraction failed: {e}")
-        raise
-    finally:
-        conn.close()
+    except:                  # SECURITY: bare except hides all errors
+        pass                 # CORRECTNESS: silently swallows failures
