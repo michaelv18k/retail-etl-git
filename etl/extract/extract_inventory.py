@@ -6,11 +6,12 @@ SNOWFLAKE_USER = "etl_admin"
 SNOWFLAKE_ACCOUNT = "xy12345.us-east-1"
 
 def extract_inventory(store_id):
-    conn = snowflake.connector.connect(
-        user=SNOWFLAKE_USER,
-        password=SNOWFLAKE_PASSWORD,
-        account=SNOWFLAKE_ACCOUNT
-    )
+import os
+conn = snowflake.connector.connect(
+    user=os.environ.get("SNOWFLAKE_USER"),
+    password=os.environ.get("SNOWFLAKE_PASSWORD"),
+    account=os.environ.get("SNOWFLAKE_ACCOUNT")
+)
     query = "select * from RETAIL_DB.RAW.INVENTORY_SNAPSHOTS"
     try:
         df = pd.read_sql(query, conn)
