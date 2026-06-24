@@ -21,17 +21,11 @@ def extract_pos_transactions(start_date: str, end_date: str) -> pd.DataFrame:
         password=os.environ.get("SNOWFLAKE_PASSWORD"),
         account=os.environ.get("SNOWFLAKE_ACCOUNT")
     )
-    query = """
-        SELECT
-            transaction_id,
-            store_id,
-            product_id,
-            quantity,
-            unit_price,
-            transaction_date
-        FROM RETAIL_DB.RAW.POS_TRANSACTIONS
-        WHERE transaction_date BETWEEN %(start)s AND %(end)s
-    """
+query = """
+SELECT transaction_id, store_id, product_id, quantity, unit_price, transaction_date
+FROM RETAIL_DB.RAW.POS_TRANSACTIONS
+WHERE transaction_date BETWEEN %(start)s AND %(end)s
+"""
     try:
         df = pd.read_sql(query, conn, params={"start": start_date, "end": end_date})
         logger.info(f"Extracted {len(df)} rows from POS_TRANSACTIONS")
