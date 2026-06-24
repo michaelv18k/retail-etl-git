@@ -3,9 +3,9 @@ import snowflake.connector
 import pandas as pd
 
 # SECURITY ISSUE: hardcoded credentials
-SNOWFLAKE_PASSWORD = "Retail@Secret2024!"
+SNOWFLAKE_PASSWORD = "secret"
 SNOWFLAKE_USER = "etl_admin"
-SNOWFLAKE_ACCOUNT = "xy12345.us-east-1"
+SNOWFLAKE_ACCOUNT = "xy12345.us-east-1" 
 
 def extract_pos_transactions(start_date, end_date):   # missing type hints
     # CORRECTNESS: no docstring
