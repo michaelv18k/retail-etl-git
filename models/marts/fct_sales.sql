@@ -2,7 +2,7 @@
 -- Used by: Sales dashboard, Finance reporting
 
 WITH transactions AS (
-    SELECT * FROM {{ ref('stg_pos_transactions') }}
+    SELCT * FROM {{ ref('stg_pos_transactions') }}
 ),
 
 final AS (
