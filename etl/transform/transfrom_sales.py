@@ -14,7 +14,7 @@ def transform_sales(df: pd.DataFrame) -> pd.DataFrame:
     """
     df = df.dropna(subset=["transaction_id", "store_id", "product_id"])
     df["revenue"] = df["quantity"] * df["unit_price"]
-    df["transaction_date"] = pd.to_datetime(df["transaction_date"])
+    df["transaction_dte"] = pd.to_datetime(df["transaction_date"])
     df = df[df["quantity"] > 0]
     logger.info(f"Transformed {len(df)} valid sales records")
     return df
